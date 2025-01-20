@@ -9,6 +9,7 @@ hex,subseason,season
 #973cbe,Clear Spring,Spring
 #af98de,Clear Spring,Spring
 #463536,Clear Spring,Spring
+#d31e0f,Clear Spring,Spring
 #9393d1,Warm Spring,Spring
 #973cbd,Warm Spring,Spring
 #d9281a,Warm Spring,Spring
@@ -19,6 +20,7 @@ hex,subseason,season
 #ffa38b,Warm Spring,Spring
 #fab57c,Warm Spring,Spring
 #ffba1c,Warm Spring,Spring
+#db4243,Warm Spring,Spring
 #faac8f,Light Spring,Spring
 #fdad66,Light Spring,Spring
 #ff8d6d,Light Spring,Spring
@@ -29,6 +31,7 @@ hex,subseason,season
 #c2a695,Light Spring,Spring
 #cfa279,Light Spring,Spring
 #9696d2,Light Spring,Spring
+#c65844,Light Spring,Spring
 #f395c7,Clear Winter,Winter
 #89189f,Clear Winter,Winter
 #a61891,Clear Winter,Winter
@@ -39,6 +42,7 @@ hex,subseason,season
 #cb0033,Clear Winter,Winter
 #c824b2,Clear Winter,Winter
 #9c40c2,Clear Winter,Winter
+#ce1222,Clear Winter,Winter
 #f192c5,Cool Winter,Winter
 #83319a,Cool Winter,Winter
 #933bbc,Cool Winter,Winter
@@ -48,6 +52,7 @@ hex,subseason,season
 #cf0038,Cool Winter,Winter
 #a7005e,Cool Winter,Winter
 #8a0c59,Cool Winter,Winter
+#b55062,Cool Winter,Winter
 #83309a,Deep Winter,Winter
 #963cbd,Deep Winter,Winter
 #c723b0,Deep Winter,Winter
@@ -57,6 +62,7 @@ hex,subseason,season
 #a7005e,Deep Winter,Winter
 #991e68,Deep Winter,Winter
 #8b0b5a,Deep Winter,Winter
+#6f1939,Deep Winter,Winter
 #f0bbc6,Soft Summer,Summer
 #ffa3b5,Soft Summer,Summer
 #f65073,Soft Summer,Summer
@@ -67,6 +73,7 @@ hex,subseason,season
 #8a687e,Soft Summer,Summer
 #78658f,Soft Summer,Summer
 #a73b70,Soft Summer,Summer
+#ad5a5d,Soft Summer,Summer
 #f395c7,Cool Summer,Summer
 #f57eb6,Cool Summer,Summer
 #e174cc,Cool Summer,Summer
@@ -77,6 +84,7 @@ hex,subseason,season
 #c00d3e,Cool Summer,Summer
 #e31c7a,Cool Summer,Summer
 #ee5c9f,Cool Summer,Summer
+#b03b58,Cool Summer,Summer
 #ecb3cb,Light Summer,Summer
 #de9ddf,Light Summer,Summer
 #f57195,Light Summer,Summer
@@ -86,6 +94,7 @@ hex,subseason,season
 #af98dd,Light Summer,Summer
 #9999d4,Light Summer,Summer
 #ccb3a5,Light Summer,Summer
+#ce5472,Light Summer,Summer
 #dc874f,Soft Autumn,Autumn
 #c26e5f,Soft Autumn,Autumn
 #996f5b,Soft Autumn,Autumn
@@ -94,6 +103,7 @@ hex,subseason,season
 #7a4b38,Soft Autumn,Autumn
 #554942,Soft Autumn,Autumn
 #b68251,Soft Autumn,Autumn
+#ad5749,Soft Autumn,Autumn
 #a47800,Warm Autumn,Autumn
 #a7641b,Warm Autumn,Autumn
 #946037,Warm Autumn,Autumn
@@ -104,6 +114,7 @@ hex,subseason,season
 #ec5037,Warm Autumn,Autumn
 #ee7000,Warm Autumn,Autumn
 #f68f2f,Warm Autumn,Autumn
+#b23b27,Warm Autumn,Autumn
 #5e068f,Deep Autumn,Autumn
 #81272b,Deep Autumn,Autumn
 #643335,Deep Autumn,Autumn
@@ -115,3 +126,4 @@ hex,subseason,season
 #bd4c00,Deep Autumn,Autumn
 #ff8300,Deep Autumn,Autumn
 #c5622d,Deep Autumn,Autumn
+#992719,Deep Autumn,Autumn

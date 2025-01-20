@@ -6,15 +6,17 @@ from sklearn.neighbors import KNeighborsClassifier
 from streamlit_image_coordinates import streamlit_image_coordinates
 from translations import translations
 
-image_directory = "D://UNPAD/Semester 7/Skripshit/websheesh/assets/cosmetics.png"
+image_directory = "./assets/cosmetics.png"
 image = Image.open(image_directory)
 
-PAGE_CONFIG = {"page_title":"Shade Check", 
-               "page_icon":image, 
-               "layout":"centered", 
-               "initial_sidebar_state":"auto"}
+PAGE_CONFIG = {"page_title": "Shade Check", 
+               "page_icon": image, 
+               "layout": "wide", 
+               "initial_sidebar_state": "auto"}
 
 st.set_page_config(**PAGE_CONFIG)
+
+st.logo('./assets/logo.png', size="large")
 
 if "language" not in st.session_state:
     st.session_state.language = "en"
@@ -28,11 +30,10 @@ with st.sidebar:
     if st.button("ID"):
         st.session_state.language = "id"
 
-
-def resize_image(image, max_width=600):
-    width_percent = (max_width / float(image.size[0]))
+def resize_image(image, container_width):
+    width_percent = (container_width / float(image.size[0]))
     new_height = int((float(image.size[1]) * float(width_percent)))
-    resized_image = image.resize((max_width, new_height), Image.Resampling.LANCZOS)
+    resized_image = image.resize((container_width, new_height), Image.Resampling.LANCZOS)
     return resized_image
 
 # Function to get the hex code from RGB
@@ -52,55 +53,69 @@ def classify_color(hex, color_data):
 
 # Load seasonal colors
 def load_colors():
-    return pd.read_csv('colors.csv')
+    return pd.read_csv('./assets/colors.csv')
 
 def shade_check_page():
     lang = st.session_state.language
     st.title(translations[lang]["check_title"])
     
-    uploaded_file = st.file_uploader((translations[lang]["upload_shade"]), type=["jpg", "png"])
-    
-    if uploaded_file is not None:
-        # Load and resize image
-        image = Image.open(uploaded_file)
-        image = resize_image(image, max_width=600)
+    # Create two columns
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Column for image upload
+        uploaded_file = st.file_uploader((translations[lang]["upload_shade"]), type=["jpg", "png"])
         
-        # Convert image to NumPy array for pixel data
-        image_array = np.array(image)
+        if uploaded_file is None:
+            st.warning((translations[lang]["warning"]))
+        
+        if uploaded_file is not None:
+            uploaded_image_path = "temp_uploaded_shade.jpg"
+            with open(uploaded_image_path, "wb") as f:
+                f.write(uploaded_file.read())
+                
+            # Load and resize image
+            image = Image.open(uploaded_file)
+            image = resize_image(image, container_width=500)
+                        
+            # Convert image to NumPy array for pixel data
+            image_array = np.array(image)
 
-        # Allow the user to click on the image to get coordinates
-        coordinates = streamlit_image_coordinates(image_array, key='coords')
+            # Allow the user to click on the image to get coordinates
+            coordinates = streamlit_image_coordinates(image_array, key='coords')
 
-        if coordinates:
-            # Extract RGB values at the selected coordinates
-            x = int(coordinates['x'])
-            y = int(coordinates['y'])
-            
-            # Store the selected color in session state
-            st.session_state['selected_color'] = image_array[y, x, :3]
+            if coordinates:
+                # Store coordinates in session state
+                x = int(coordinates['x'])
+                y = int(coordinates['y'])
+                st.session_state['selected_color'] = image_array[y, x, :3]
 
-            # Display the selected color in a color picker
-            st.color_picker(
-                (translations[lang]["select_color"]),
-                value='#%02x%02x%02x' % tuple(st.session_state['selected_color']),
-            )
+    # Only display the right column if an image has been uploaded
+    if uploaded_file is not None:
+        with col2:
+            # Column for color details
+            if "selected_color" in st.session_state:
+                # Display the selected color in a color picker
+                st.color_picker(
+                    (translations[lang]["select_color"]),
+                    value='#%02x%02x%02x' % tuple(st.session_state['selected_color']),
+                )
 
-            # Convert RGB to Hex code
-            hex_color = rgb_to_hex(st.session_state['selected_color'])
-            st.write((translations[lang]["hex_code"]), f"{hex_color}")
+                # Convert RGB to Hex code
+                hex_color = rgb_to_hex(st.session_state['selected_color'])
+                st.write((translations[lang]["hex_code"]), f"{hex_color}")
 
-            # Load seasonal colors
-            color_data = load_colors()
-            color_data['R'] = color_data['hex'].apply(lambda x: int(x[1:3], 16))
-            color_data['G'] = color_data['hex'].apply(lambda x: int(x[3:5], 16))
-            color_data['B'] = color_data['hex'].apply(lambda x: int(x[5:7], 16))
+                # Load seasonal colors
+                color_data = load_colors()
+                color_data['R'] = color_data['hex'].apply(lambda x: int(x[1:3], 16))
+                color_data['G'] = color_data['hex'].apply(lambda x: int(x[3:5], 16))
+                color_data['B'] = color_data['hex'].apply(lambda x: int(x[5:7], 16))
 
+                # Classify the color as a seasonal color
+                season = classify_color(hex_color, color_data)
+                st.write((translations[lang]["seasonal_shade"]), f"{season}")
+            else:
+                st.info(translations[lang]["select_point_to_see_details"])
 
-            # Classify the color as a seasonal color
-            season = classify_color(hex_color, color_data)
-            st.write((translations[lang]["seasonal_shade"]),f"{season}")
-
-    else:
-        st.warning((translations[lang]["warning"]))
-
-shade_check_page()
+if __name__ == "__main__":
+    shade_check_page()
