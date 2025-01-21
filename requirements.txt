@@ -10,4 +10,3 @@ pillow>=8.0.0
 pyfacer
 streamlit-image-coordinates
 opencv-python-headless
-sckit-build
