@@ -1,4 +1,5 @@
 streamlit
+streamlit-image-coordinates
 scikit-learn
 scikit-build
 scikit-image
@@ -8,12 +9,14 @@ pandas
 pillow
 numpy
 opencv-python-headless
-opencv-contrib-python
 pyfacer
-streamlit-image-coordinates
 timm
 ipywidgets
 matplotlib
 validators
 requests
 pyopengl
+textblob
+scipy
+pytesseract
+nltk
