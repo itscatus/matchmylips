@@ -77,7 +77,6 @@ def upload_img(uploaded_image):
             
 
 # Function to classify and display recommended colors
-# Function to classify and display recommended colors
 def classify_spca(uploaded_image):
     processed_image = transform(uploaded_image).unsqueeze(0).to(device)
     with torch.no_grad():
@@ -111,18 +110,8 @@ def classify_spca(uploaded_image):
                 st.markdown(
                     f"""
                     <div style="text-align: center;">
-                        <div style="
-                            background-color: {hex_code};
-                            width: 50px;
-                            height: 50px;
-                            border-radius: 50%;
-                            margin: 0 auto;  /* Centers the circle */
-                            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-                        ">
-                        </div>
-                        <div style="margin-top: 5px; font-size: 14px; color: #333;">
-                            {hex_code}
-                        </div>
+                        <div style="background-color: {hex_code}; width: 50px; height: 50px; border-radius: 50%; margin: 0 auto; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>
+                        <div style="margin-top: 5px; font-size: 14px; color: #333;">{hex_code}</div>
                     </div>
                     """, 
                     unsafe_allow_html=True
