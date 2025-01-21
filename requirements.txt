@@ -9,4 +9,5 @@ numpy>=1.21.0
 pillow>=8.0.0
 pyfacer
 streamlit-image-coordinates
-opencv-python-headless
+opencv-python
+scikit-build
