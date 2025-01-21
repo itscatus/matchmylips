@@ -1,17 +1,17 @@
 streamlit
 scikit-learn
-opencv-python-headless
-torch
+scikit-build
+scikit-image
+torch >= 1.9.1
 torchvision
-torchaudio
 pandas
-numpy
 pillow
+numpy
 pyfacer
 streamlit-image-coordinates
-scikit-build
-libgl1
-libglib2.0-0
-libsm6
-libxext6
-libxrender1
+timm
+ipywidgets
+matplotlib
+validators
+requests
+opencv-python
