@@ -3,7 +3,7 @@ from PIL import Image, ImageOps
 from translations import translations
 import torch
 from torchvision import transforms
-import facer
+from facer import face_detector, face_parser
 import pandas as pd
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
@@ -55,8 +55,7 @@ transform = transforms.Compose([
 ])
 
 # Initialize facer detectors and parsers
-face_detector = facer.face_detector('retinaface/mobilenet', device=device)
-face_parser = facer.face_parser('farl/lapa/448', device=device)
+detector = face_detector('retinaface/mobilenet', device=device)
 
 # Load colors.csv
 colors_csv_path = "./assets/colors.csv"
@@ -67,7 +66,7 @@ def upload_img(uploaded_image):
     # Face detection and personal color analysis
         img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
         with torch.no_grad():
-            detections = face_detector(img_tensor)
+            detections = detector(img_tensor)
 
         if len(detections) == 0:
             st.error((translations[lang]["error_detect"]))
