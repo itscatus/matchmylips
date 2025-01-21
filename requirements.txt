@@ -16,5 +16,4 @@ ipywidgets
 matplotlib
 validators
 requests
-opencv-python
 pyopengl
