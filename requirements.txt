@@ -8,6 +8,7 @@ pandas
 pillow
 numpy
 opencv-python-headless
+opencv-contrib-python
 pyfacer
 streamlit-image-coordinates
 timm
