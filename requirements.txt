@@ -11,3 +11,4 @@ pyfacer
 streamlit-image-coordinates
 opencv-python-headless
 opencv-python
+cv2
