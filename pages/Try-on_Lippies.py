@@ -33,27 +33,40 @@ with st.sidebar:
 
 # Inisialisasi model FARL
 device = "cuda" if torch.cuda.is_available() else "cpu"
-face_detector = facer.face_detector('retinaface/mobilenet', device=device)
-face_parser = facer.face_parser('farl/lapa/448', device=device)
+
+# Initialize session state if not exists
+if 'face_detector' not in st.session_state:
+    st.session_state.face_detector = facer.face_detector('retinaface/mobilenet', device=device)
+if 'face_parser' not in st.session_state:
+    st.session_state.face_parser = facer.face_parser('farl/lapa/448', device=device)
 
 # Fungsi untuk menghasilkan parsing map
 def evaluate(image):
-    with torch.no_grad():
-        image_tensor = torch.tensor(image).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
-        image_tensor = image_tensor.to(device)
+    try:
+        with torch.no_grad():
+            image_tensor = torch.tensor(image).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
+            image_tensor = image_tensor.to(device)
+            
+            faces = st.session_state.face_detector(image_tensor)
+            if faces['rects'].nelement() == 0:
+                return None
 
-        faces = face_detector(image_tensor)
-        if faces['rects'].nelement() == 0:
-            return None
+            if 'image_ids' in faces:
+                faces['image_ids'] = faces['image_ids'].long()
 
-        if 'image_ids' in faces:
-            faces['image_ids'] = faces['image_ids'].long()
-
-        faces_parsed = face_parser(image_tensor, faces)
-        seg_logits = faces_parsed['seg']['logits']
-        seg_probs = seg_logits.softmax(dim=1).cpu()
-        parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
-        return parsing_map
+            faces_parsed = st.session_state.face_parser(image_tensor, faces)
+            seg_logits = faces_parsed['seg']['logits']
+            seg_probs = seg_logits.softmax(dim=1).cpu()
+            parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
+            
+            # Clear CUDA cache if using GPU
+            if device == "cuda":
+                torch.cuda.empty_cache()
+                
+            return parsing_map
+    except Exception as e:
+        st.error(f"Error in evaluate: {str(e)}")
+        return None
 
 # Fungsi untuk mewarnai bibir dengan alpha
 def apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha):
@@ -92,56 +105,58 @@ def apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha):
 def virtual_makeup():
     st.title(translations[lang]["try_title"])
     
-    # Initialize processed_image outside columns
-    processed_image = None
+    # Use session state for processed image
+    if 'processed_image' not in st.session_state:
+        st.session_state.processed_image = None
     
-    # Create columns
     col1, col2 = st.columns([1, 1])
     
-    # Handle image upload first (col1)
     with col1:
-        img_file_buffer = st.file_uploader(translations[lang]["upload_image"], type=["jpg", "jpeg", "png"])
+        img_file_buffer = st.file_uploader(translations[lang]["upload_image"], 
+                                         type=["jpg", "jpeg", "png"],
+                                         key="makeup_uploader")  # Add unique key
         
         if img_file_buffer:
-            # Load and display original image
-            image = Image.open(img_file_buffer)
-            image = ImageOps.exif_transpose(image)
-            if image.mode == "RGBA":
-                image = image.convert("RGB")
-            image = np.array(image)
-            st.subheader(translations[lang]["original"])
-            st.image(image, use_container_width=True)
-            
-            # Add settings
-            st.sidebar.divider()
-            st.sidebar.title(translations[lang]["setting"])
-            lip_color = st.sidebar.color_picker(translations[lang]["choose_lip"], "#FF69B4")
-            lip_color = ImageColor.getcolor(lip_color, "RGB")
-            alpha = st.sidebar.slider(translations[lang]["adjust_alpha"], 0.0, 1.0, 0.2)
-            apply_button = st.sidebar.button(translations[lang]["apply_button"])
-            
-            if apply_button:
-                with st.spinner(translations[lang]["processing"]):
-                    parsing_map = evaluate(image)
-                    if parsing_map is not None:
-                        try:
-                            processed_image = apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha)
-                        except Exception as e:
-                            st.error(f"{translations[lang]['error_process']}{str(e)}")
-                    else:
-                        st.error(translations[lang]["error_detect"])
+            try:
+                image = Image.open(img_file_buffer)
+                image = ImageOps.exif_transpose(image)
+                if image.mode == "RGBA":
+                    image = image.convert("RGB")
+                image = np.array(image)
+                st.subheader(translations[lang]["original"])
+                st.image(image, use_container_width=True)
+                
+                st.sidebar.divider()
+                st.sidebar.title(translations[lang]["setting"])
+                lip_color = st.sidebar.color_picker(translations[lang]["choose_lip"], "#FF69B4")
+                lip_color = ImageColor.getcolor(lip_color, "RGB")
+                alpha = st.sidebar.slider(translations[lang]["adjust_alpha"], 0.0, 1.0, 0.2)
+                
+                if st.sidebar.button(translations[lang]["apply_button"]):
+                    with st.spinner(translations[lang]["processing"]):
+                        parsing_map = evaluate(image)
+                        if parsing_map is not None:
+                            try:
+                                st.session_state.processed_image = apply_lip_color_with_alpha(
+                                    image, parsing_map, lip_color, alpha)
+                            except Exception as e:
+                                st.error(f"{translations[lang]['error_process']}{str(e)}")
+                        else:
+                            st.error(translations[lang]["error_detect"])
+            except Exception as e:
+                st.error(f"Error processing image: {str(e)}")
+                st.session_state.processed_image = None
         else:
             st.warning(translations[lang]["warning_2"])
 
-    # Show results in col2
     with col2:
         st.write(translations[lang]["try_result"])
-        if processed_image is not None:
+        if st.session_state.processed_image is not None:
             st.subheader(translations[lang]["modified"])
-            st.image(processed_image, use_container_width=True)
+            st.image(st.session_state.processed_image, use_container_width=True)
         else:
             st.info(translations[lang]["upload_info"])
             st.warning(translations[lang]["upload_warn"])
     
 # Jalankan aplikasi jika script ini dijalankan
-virtual_makeup()    
+virtual_makeup()

@@ -3,20 +3,16 @@ streamlit-image-coordinates
 scikit-learn
 scikit-build
 scikit-image
-torch >= 1.9.1
+torch>=1.9.1
 torchvision
 pandas
 pillow
 numpy
 opencv-python-headless
-pyfacer
+requests
 timm
 ipywidgets
 matplotlib
 validators
-requests
 pyopengl
-textblob
 scipy
-pytesseract
-nltk
