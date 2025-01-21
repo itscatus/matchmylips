@@ -91,68 +91,57 @@ def apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha):
 # Aplikasi Streamlit
 def virtual_makeup():
     st.title(translations[lang]["try_title"])
-
-    # Layout: Left for the results, Right for upload
-    col1, col2 = st.columns([1, 1])  # Adjust the column width as needed
     
-    # Left column (display images)
+    # Initialize processed_image outside columns
+    processed_image = None
+    
+    # Create columns
+    col1, col2 = st.columns([1, 1])
+    
+    # Handle image upload first (col1)
+    with col1:
+        img_file_buffer = st.file_uploader(translations[lang]["upload_image"], type=["jpg", "jpeg", "png"])
+        
+        if img_file_buffer:
+            # Load and display original image
+            image = Image.open(img_file_buffer)
+            image = ImageOps.exif_transpose(image)
+            if image.mode == "RGBA":
+                image = image.convert("RGB")
+            image = np.array(image)
+            st.subheader(translations[lang]["original"])
+            st.image(image, use_container_width=True)
+            
+            # Add settings
+            st.sidebar.divider()
+            st.sidebar.title(translations[lang]["setting"])
+            lip_color = st.sidebar.color_picker(translations[lang]["choose_lip"], "#FF69B4")
+            lip_color = ImageColor.getcolor(lip_color, "RGB")
+            alpha = st.sidebar.slider(translations[lang]["adjust_alpha"], 0.0, 1.0, 0.2)
+            apply_button = st.sidebar.button(translations[lang]["apply_button"])
+            
+            if apply_button:
+                with st.spinner(translations[lang]["processing"]):
+                    parsing_map = evaluate(image)
+                    if parsing_map is not None:
+                        try:
+                            processed_image = apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha)
+                        except Exception as e:
+                            st.error(f"{translations[lang]['error_process']}{str(e)}")
+                    else:
+                        st.error(translations[lang]["error_detect"])
+        else:
+            st.warning(translations[lang]["warning_2"])
+
+    # Show results in col2
     with col2:
         st.write(translations[lang]["try_result"])
-        processed_image = None  # Initialize to None in case of errors, will be updated later
         if processed_image is not None:
+            st.subheader(translations[lang]["modified"])
             st.image(processed_image, use_container_width=True)
         else:
             st.info(translations[lang]["upload_info"])
             st.warning(translations[lang]["upload_warn"])
     
-    # Right column (upload and settings)
-    with col1:
-        # Form unggah gambar
-        img_file_buffer = st.file_uploader(translations[lang]["upload_image"], type=["jpg", "jpeg", "png"])
-        if not img_file_buffer:
-            st.warning(translations[lang]["warning_2"])
-            return
-
-        # Load gambar
-        image = Image.open(img_file_buffer)
-        image = ImageOps.exif_transpose(image)
-        if image.mode == "RGBA":
-            image = image.convert("RGB")
-        image = np.array(image)
-        st.subheader((translations[lang]["original"]))
-        st.image(image, use_container_width=True)
-
-        # Sidebar settings
-        st.sidebar.divider()
-        st.sidebar.title((translations[lang]["setting"]))
-        lip_color = st.sidebar.color_picker((translations[lang]["choose_lip"]), "#FF69B4")
-        lip_color = ImageColor.getcolor(lip_color, "RGB")
-        alpha = st.sidebar.slider((translations[lang]["adjust_alpha"]), 0.0, 1.0, 0.2)
-        apply_button = st.sidebar.button((translations[lang]["apply_button"]))
-
-        # Proses hanya jika tombol ditekan
-        if apply_button:
-            with st.spinner((translations[lang]["processing"])):
-                parsing_map = evaluate(image)
-
-            if parsing_map is not None:
-                try:
-                    processed_image = apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha)
-                except cv2.error as e:
-                    if "resize.cpp" in str(e):  # Deteksi error dari cv2.resize
-                        st.error(st.write(translations[lang]["error_detect"]))
-                        return
-                    else:
-                        st.error(st.write(translations[lang]["error_process"]), f"{e}")
-                        return
-
-                # Update left column after processing
-                with col2:
-                    st.subheader((translations[lang]["modified"]))
-                    st.image(processed_image, use_container_width=True)
-            else:
-                st.error(st.write(translations[lang]["error_detect"]))
-    
 # Jalankan aplikasi jika script ini dijalankan
-if __name__ == "__main__":
-    virtual_makeup()
+virtual_makeup()    
