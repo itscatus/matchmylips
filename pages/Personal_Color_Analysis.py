@@ -55,29 +55,53 @@ transform = transforms.Compose([
 ])
 
 # Initialize facer detectors and parsers
-detector = face_detector('retinaface/mobilenet', device=device)
+face_detector = face_detector('retinaface/mobilenet', device=device)
+face_parser = facer.face_parser('farl/lapa/448', device=device)
 
 # Load colors.csv
 colors_csv_path = "./assets/colors.csv"
 colors_df = pd.read_csv(colors_csv_path)
+
+def extract_skin(image):
+    """
+    Ekstrak area kulit wajah dari gambar.
+    """
+    img_tensor = transform(image).unsqueeze(0).to(device)
+    with torch.no_grad():
+        parsing_result = face_parser(img_tensor)[0]  # Hasil parsing wajah
+
+    # Mask untuk area kulit (label tergantung model, misalnya label kulit = 1)
+    skin_mask = (parsing_result == 1)
+
+    # Terapkan mask ke gambar asli
+    skin_tensor = img_tensor.squeeze(0) * skin_mask.float()
+
+    return transforms.ToPILImage()(skin_tensor.cpu())
 
 # Function to analysis the personal color
 def upload_img(uploaded_image):
     # Face detection and personal color analysis
         img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
         with torch.no_grad():
-            detections = detector(img_tensor)
+        detections = face_detector(img_tensor)
 
         if len(detections) == 0:
             st.error((translations[lang]["error_detect"]))
         else:
             st.success((translations[lang]["success_detect"]))
+
+        # Ekstraksi kulit wajah
+        skin_image = extract_skin(uploaded_image)
+
+        # Tampilkan hasil ekstraksi kulit
+        st.image(skin_image, caption="Extracted Skin Area", use_container_width=True)
+        return skin_image  # Kembalikan gambar kulit wajah
             
             
 
 # Function to classify and display recommended colors
-def classify_spca(uploaded_image):
-    processed_image = transform(uploaded_image).unsqueeze(0).to(device)
+def classify_spca(processed_skin_image):
+    processed_image = transform(processed_skin_image).unsqueeze(0).to(device)
     with torch.no_grad():
         predictions = model(processed_image)
         confidences = torch.nn.functional.softmax(predictions, dim=1).cpu().numpy()[0]
@@ -129,9 +153,9 @@ def analysis_page():
 
         # Simpan file yang diunggah secara lokal
         if uploaded_file is not None:
-            uploaded_image_path = "temp_uploaded_image.jpg"
-            with open(uploaded_image_path, "wb") as f:
-                f.write(uploaded_file.read())
+            # uploaded_image_path = "temp_uploaded_image.jpg"
+            # with open(uploaded_image_path, "wb") as f:
+            #     f.write(uploaded_file.read())
 
             # Tampilkan gambar yang diunggah
             uploaded_image = Image.open(uploaded_file).convert("RGB")
@@ -146,10 +170,10 @@ def analysis_page():
         
         if uploaded_file is not None:
             # Deteksi wajah dan analisis personal color
-            upload_img(uploaded_image)
+            skin image = upload_img(uploaded_image)
 
             if st.button("Start Analysis"):
-                classify_spca(uploaded_image)
+                classify_spca(skin_image)
         else:
             st.info(translations[lang]["upload_info"])
 
