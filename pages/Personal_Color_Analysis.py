@@ -116,6 +116,9 @@ def extract_skin(image, parsing_map):
 
 # Function to process skin extraction in the uploaded image
 def upload_img(uploaded_image):
+    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp_file:
+        uploaded_image.save(tmp_file.name)
+        tmp_file_path = tmp_file.name
     # Extract parsing map
     parsing_map_result = evaluate(uploaded_image)
     if parsing_map_result is None:
