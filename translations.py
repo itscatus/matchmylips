@@ -50,7 +50,7 @@ translations = {
         "feature_3": "3. Mencoba warna yang kamu inginkan pada bibirmu.",
         "navigation_prompt": "Silakan gunakan navigasi di samping untuk memulai.",
         
-        "upload_image": "Pastikan wajah Anda terlihat dengan jelas untuk hasil yang lebih baik.",
+        "upload_warn": "Pastikan wajah Anda terlihat dengan jelas untuk hasil yang lebih baik.",
         "warning_2": "Unggah citra untuk memulai analisis.",
         "error_detect": "Wajah tidak terdeteksi. Harap unggah ulang citra dengan wajah terlihat jelas.",
         "success_detect": "Wajah terdeteksi! Klik tombol di bawah untuk memulai analisis *personal color*...",

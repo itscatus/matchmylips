@@ -6,8 +6,8 @@ import cv2
 import pandas as pd
 from torchvision import transforms
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
-import facer
 from translations import translations
+from functions import evaluate
 
 # Streamlit page setup
 PAGE_CONFIG = {
@@ -48,49 +48,20 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-# Initialize models
-face_detector = facer.face_detector('retinaface/mobilenet', device=device)
-face_parser = facer.face_parser('farl/lapa/448', device=device)
-
 # Load colors CSV
 colors_csv_path = "./assets/colors.csv"
 colors_df = pd.read_csv(colors_csv_path)
 
-# Parsing map function
-def evaluate(image_path):
-    try:
-        with torch.no_grad():
-            image = Image.open(image_path).convert("RGB")
-            image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
-            image_tensor = image_tensor.to(device)
-
-            faces = face_detector(image_tensor)
-            if faces['rects'].nelement() == 0:
-                return None
-
-            faces['image_ids'] = faces['image_ids'].long() if 'image_ids' in faces else None
-            faces_parsed = face_parser(image_tensor, faces)
-            seg_logits = faces_parsed['seg']['logits']
-            seg_probs = seg_logits.softmax(dim=1).cpu()
-            parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
-
-            return parsing_map
-    except Exception as e:
-        st.error(f"Error in evaluate: {e}")
-        return None
-
 # Extract skin function
-def extract_skin(image_path, parsing_map):
-    image = Image.open(image_path).convert("RGB")
-    image = np.array(image)
+def extract_skin(image, parsing_map):
+    image = np.array(image)  # Convert PIL Image to NumPy array
     h, w, _ = image.shape
 
+    # Resize parsing map to match image dimensions
     parsing_map_resized = cv2.resize(parsing_map, (w, h), interpolation=cv2.INTER_NEAREST)
     skin_mask = (parsing_map_resized == 1).astype(np.uint8)
 
-    # image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
-    # image_rgba[:, :, 3] = skin_mask * 255
-    
+    # Mask the image to extract skin region
     image[skin_mask == 0] = [0, 0, 0]
 
     return image
@@ -136,10 +107,7 @@ def analysis_page():
     with col1:
         uploaded_file = st.file_uploader(translations[lang]["upload_image"], type=["jpg", "png"])
         if uploaded_file is not None:
-            uploaded_image_path = "temp_uploaded_image.jpg"
-            with open(uploaded_image_path, "wb") as f:
-                f.write(uploaded_file.read())
-
+            # Directly open the uploaded image as PIL Image
             uploaded_image = Image.open(uploaded_file).convert("RGB")
             uploaded_image = ImageOps.exif_transpose(uploaded_image)
             st.image(uploaded_image, use_container_width=True)
@@ -150,9 +118,10 @@ def analysis_page():
         st.write(translations[lang]["analyze_result"])
 
         if uploaded_file is not None:
-            parsing_map = evaluate(uploaded_image_path)
+            # Directly use uploaded_image in the evaluation process
+            parsing_map = evaluate(uploaded_image)
             if parsing_map is not None:
-                skin_image = extract_skin(uploaded_image_path, parsing_map)
+                skin_image = extract_skin(uploaded_image, parsing_map)
                 # st.image(skin_image, caption="Extracted Skin", use_container_width=True)
 
             if st.button("Start Analysis"):
