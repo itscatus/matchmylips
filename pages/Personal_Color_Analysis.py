@@ -89,7 +89,7 @@ def extract_skin(image_path, parsing_map):
     skin_mask = (parsing_map_resized == 1).astype(np.uint8)
 
     image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
-    image_rgba[:, :, 3] = skin_mask * 255
+    # image_rgba[:, :, 3] = skin_mask * 255
 
     return image_rgba
 
@@ -151,7 +151,7 @@ def analysis_page():
             parsing_map = evaluate(uploaded_image_path)
             if parsing_map is not None:
                 skin_image = extract_skin(uploaded_image_path, parsing_map)
-                # st.image(skin_image, caption="Extracted Skin", use_container_width=True)
+                st.image(skin_image, caption="Extracted Skin", use_container_width=True)
 
             if st.button("Start Analysis"):
                 classify_and_recommend(uploaded_image)
