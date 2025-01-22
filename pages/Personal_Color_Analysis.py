@@ -88,10 +88,12 @@ def extract_skin(image_path, parsing_map):
     parsing_map_resized = cv2.resize(parsing_map, (w, h), interpolation=cv2.INTER_NEAREST)
     skin_mask = (parsing_map_resized == 1).astype(np.uint8)
 
-    image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
+    # image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
     # image_rgba[:, :, 3] = skin_mask * 255
+    
+    image[skin_mask == 0] = [0, 0, 0]
 
-    return image_rgba
+    return image
 
 # Classification and recommendation function
 def classify_and_recommend(uploaded_image):
