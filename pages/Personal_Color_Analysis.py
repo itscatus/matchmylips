@@ -9,15 +9,6 @@ from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 import facer
 from translations import translations
 
-# Initialize device and models
-device = "cuda" if torch.cuda.is_available() else "cpu"
-face_detector = facer.face_detector('retinaface/mobilenet', device=device)
-face_parser = facer.face_parser('farl/lapa/448', device=device)
-
-# Load colors CSV
-colors_csv_path = "./assets/colors.csv"
-colors_df = pd.read_csv(colors_csv_path)
-
 # Initialize MobileNet model
 model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT)
 num_classes = 4  # Update with your number of classes
@@ -34,6 +25,15 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
+
+# Initialize device and models
+device = "cuda" if torch.cuda.is_available() else "cpu"
+face_detector = facer.face_detector('retinaface/mobilenet', device=device)
+face_parser = facer.face_parser('farl/lapa/448', device=device)
+
+# Load colors CSV
+colors_csv_path = "./assets/colors.csv"
+colors_df = pd.read_csv(colors_csv_path)
 
 # Streamlit page setup
 PAGE_CONFIG = {
