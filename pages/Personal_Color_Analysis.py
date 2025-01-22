@@ -56,7 +56,7 @@ transform = transforms.Compose([
 
 # Initialize facer detectors and parsers
 face_detector = face_detector('retinaface/mobilenet', device=device)
-face_parser = facer.face_parser('farl/lapa/448', device=device)
+face_parser = face_parser('farl/lapa/448', device=device)
 
 # Load colors.csv
 colors_csv_path = "./assets/colors.csv"
@@ -83,7 +83,7 @@ def upload_img(uploaded_image):
     # Face detection and personal color analysis
         img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
         with torch.no_grad():
-        detections = face_detector(img_tensor)
+            detections = face_detector(img_tensor)
 
         if len(detections) == 0:
             st.error((translations[lang]["error_detect"]))
