@@ -170,7 +170,7 @@ def analysis_page():
         
         if uploaded_file is not None:
             # Deteksi wajah dan analisis personal color
-            skin image = upload_img(uploaded_image)
+            skin_image = upload_img(uploaded_image)
 
             if st.button("Start Analysis"):
                 classify_spca(skin_image)
