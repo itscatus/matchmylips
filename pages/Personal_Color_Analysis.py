@@ -6,8 +6,8 @@ import cv2
 import pandas as pd
 from torchvision import transforms
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
-from translations import translations
-from functions import evaluate
+from utils.translations import translations
+from utils.functions import evaluate
 
 # Streamlit page setup
 PAGE_CONFIG = {

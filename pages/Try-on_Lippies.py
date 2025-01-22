@@ -2,8 +2,8 @@ import numpy as np
 from PIL import Image, ImageColor, ImageOps
 import cv2
 import streamlit as st
-from translations import translations
-from functions import evaluate
+from utils.translations import translations
+from utils.functions import evaluate
 
 # Page config
 image_directory = "./assets/lips.png"

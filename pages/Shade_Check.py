@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from streamlit_image_coordinates import streamlit_image_coordinates
-from translations import translations
+from utils.translations import translations
 
 image_directory = "./assets/cosmetics.png"
 image = Image.open(image_directory)

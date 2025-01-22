@@ -1,5 +1,5 @@
 import streamlit as st
-from translations import translations
+from utils.translations import translations
 from PIL import Image
 
 image_directory = "./assets/house-door.png"
