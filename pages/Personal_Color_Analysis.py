@@ -153,7 +153,7 @@ def analysis_page():
             parsing_map = evaluate(uploaded_image_path)
             if parsing_map is not None:
                 skin_image = extract_skin(uploaded_image_path, parsing_map)
-                st.image(skin_image, caption="Extracted Skin", use_container_width=True)
+                # st.image(skin_image, caption="Extracted Skin", use_container_width=True)
 
             if st.button("Start Analysis"):
                 classify_and_recommend(uploaded_image)
