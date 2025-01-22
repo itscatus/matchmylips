@@ -1,22 +1,27 @@
-import streamlit as st
-from PIL import Image, ImageOps
-from translations import translations
+import numpy as np
 import torch
+from PIL import Image, ImageOps
+import cv2
+import facer
+import streamlit as st
 from torchvision import transforms
-from facer import face_detector, face_parser
 import pandas as pd
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 
+# Model and facer initialization
+device = "cuda" if torch.cuda.is_available() else "cpu"
+face_detector = facer.face_detector('retinaface/mobilenet', device=device)
+face_parser = facer.face_parser('farl/lapa/448', device=device)
+
+# Streamlit setup
 image_directory = "./assets/person-bounding-box.png"
 image = Image.open(image_directory)
 
-PAGE_CONFIG = {"page_title":"Personal Color Analysis", 
-               "page_icon":image, 
-               "layout":"wide", 
-               "initial_sidebar_state":"auto"}
-
+PAGE_CONFIG = {"page_title": "Personal Color Analysis", 
+               "page_icon": image, 
+               "layout": "wide", 
+               "initial_sidebar_state": "auto"}
 st.set_page_config(**PAGE_CONFIG)
-
 
 st.logo('./assets/logo.png', size="large")
 
@@ -33,19 +38,16 @@ with st.sidebar:
     if st.button("ID"):
         st.session_state.language = "id"
 
-# Model and facer initialization
-model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT) 
-num_classes = 4  # Ganti dengan jumlah kelas Anda
-
-# Sesuaikan output layer (fc) dengan jumlah kelas yang diinginkan
-model.classifier[1]= torch.nn.Linear(model.classifier[1].in_features, num_classes)
+# Load model for personal color analysis
+model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT)
+num_classes = 4  # Adjust based on your dataset
+model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, num_classes)
 
 MODEL_PATH = "./best_mobilenetv2_model.pth"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 state_dict = torch.load(MODEL_PATH, map_location=device, weights_only=True)
-model.load_state_dict(state_dict)  # Muat ke model
-model = model.to(device)  # Pindahkan ke device
-model.eval()  # Set model ke mode evaluasi
+model.load_state_dict(state_dict)
+model = model.to(device)
+model.eval()
 
 # Define image transformations
 transform = transforms.Compose([
@@ -54,77 +56,98 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-# Initialize facer detectors and parsers
-face_detector = face_detector('retinaface/mobilenet', device=device)
-face_parser = face_parser('farl/lapa/448', device=device)
-
-# Load colors.csv
+# Load colors CSV
 colors_csv_path = "./assets/colors.csv"
 colors_df = pd.read_csv(colors_csv_path)
 
-def extract_skin(image):
-    img_tensor = transform(image).permute(2, 0, 1).unsqueeze(0).to(device)
-    with torch.no_grad():
-        parsing_result = face_parser(img_tensor)[0]  # Hasil parsing wajah
+# Function to evaluate and get parsing map
+def evaluate(image_path):
+    try:
+        with torch.no_grad():
+            image = Image.open(image_path).convert("RGB")
+            image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
+            image_tensor = image_tensor.to(device)
+            
+            faces = face_detector(image_tensor)
+            if faces['rects'].nelement() == 0:
+                return None
 
-    # Mask untuk area kulit (label kulit biasanya 1 atau sesuai dengan output model)
-    skin_mask = (parsing_result == 1)  # Sesuaikan dengan label kulit di model Anda
+            faces_parsed = face_parser(image_tensor, faces)
+            seg_logits = faces_parsed['seg']['logits']
+            seg_probs = seg_logits.softmax(dim=1).cpu()
+            parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
+            
+            return parsing_map
+    except Exception as e:
+        print(f"Error in evaluate: {e}")
+        return None
 
-    # Terapkan mask ke gambar asli
-    skin_tensor = img_tensor.squeeze(0) * skin_mask.float()
+# Function to extract skin from image using parsing map
+def extract_skin(image_path, parsing_map):
+    image = Image.open(image_path).convert("RGB")
+    image = np.array(image)
+    h, w, _ = image.shape
 
-    return transforms.ToPILImage()(skin_tensor.cpu())
+    if parsing_map is None or parsing_map.size == 0:
+        raise ValueError("Error: parsing_map is empty or invalid!")
 
-# Function to analysis the personal color
+    parsing_map_resized = cv2.resize(parsing_map, (w, h), interpolation=cv2.INTER_NEAREST)
+
+    skin_mask = (parsing_map_resized == 1).astype(np.uint8)  # Assuming skin is labeled as 1
+
+    image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
+    image_rgba[:, :, 3] = skin_mask * 255  # Set transparency for non-skin areas
+
+    return image_rgba
+
+# Function to process skin extraction in the uploaded image
 def upload_img(uploaded_image):
-    # Face detection and personal color analysis
     img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
     with torch.no_grad():
         detections = face_detector(img_tensor)
 
     if len(detections) == 0:
-        st.error((translations[lang]["error_detect"]))
+        st.error(translations[lang]["error_detect"])
     else:
-        st.success((translations[lang]["success_detect"]))
+        st.success(translations[lang]["success_detect"])
 
-    # Ekstraksi kulit wajah
-    face_skin = extract_skin(uploaded_image)
+    # Extract skin using the parsing map
+    parsing_map_result = evaluate(uploaded_image)
+    skin_image = extract_skin(uploaded_image, parsing_map_result)
 
-    # Tampilkan hasil ekstraksi kulit
-    st.image(face_skin, caption="Extracted Skin Area", use_container_width=True)
-    return face_skin  # Kembalikan gambar kulit wajah            
+    # Display extracted skin image
+    st.image(skin_image, caption="Extracted Skin Area", use_container_width=True)
+    return skin_image
 
-# Function to classify and display recommended colors
+# Function to classify the personal color based on extracted skin image
 def classify_spca(processed_skin_image):
     processed_image = transform(processed_skin_image).unsqueeze(0).to(device)
     with torch.no_grad():
         predictions = model(processed_image)
         confidences = torch.nn.functional.softmax(predictions, dim=1).cpu().numpy()[0]
 
-    # Mapping seasons to predictions
     seasons = ["Spring", "Summer", "Autumn", "Winter"]
     predicted_index = confidences.argmax()
     predicted_season = seasons[predicted_index]
     confidence_percentage = confidences[predicted_index] * 100
 
-    st.write((translations[lang]["season_type"]), f"**{predicted_season}**")
-    st.write((translations[lang]["confidence"]),  f"**{confidence_percentage:.2f}%**")
+    st.write(translations[lang]["season_type"], f"**{predicted_season}**")
+    st.write(translations[lang]["confidence"], f"**{confidence_percentage:.2f}%**")
 
-    # Filter warna berdasarkan musim yang diprediksi
+    # Filter colors based on predicted season
     season_colors = colors_df[colors_df['season'] == predicted_season]
 
-    st.write((translations[lang]["recommendation"]), f"{predicted_season}:")
+    st.write(translations[lang]["recommendation"], f"{predicted_season}:")
     
-    # Create table with 8 colors per row
+    # Create table with 5 colors per row
     colors_per_row = 5
-    rows = [season_colors[i:i+colors_per_row] for i in range(0, len(season_colors), colors_per_row)]
+    rows = [season_colors[i:i + colors_per_row] for i in range(0, len(season_colors), colors_per_row)]
 
     for row in rows:
         columns = st.columns(len(row))
         for col, (_, color) in zip(columns, row.iterrows()):
             hex_code = color['hex']
             with col:
-                # Display color block
                 st.markdown(
                     f"""
                     <div style="text-align: center;">
@@ -139,32 +162,25 @@ def classify_spca(processed_skin_image):
 def analysis_page():
     st.title(translations[lang]["analysis_title"])
 
-    # Membuat dua kolom
+    # Create two columns
     col1, col2 = st.columns(2)
 
-    # Kolom Kiri: Upload Gambar
+    # Left column: Upload image
     with col1:
-        uploaded_file = st.file_uploader(translations[lang]["upload_image"],type=["jpg", "png"])
+        uploaded_file = st.file_uploader(translations[lang]["upload_image"], type=["jpg", "png"])
 
-        # Simpan file yang diunggah secara lokal
         if uploaded_file is not None:
-            # uploaded_image_path = "temp_uploaded_image.jpg"
-            # with open(uploaded_image_path, "wb") as f:
-            #     f.write(uploaded_file.read())
-
-            # Tampilkan gambar yang diunggah
             uploaded_image = Image.open(uploaded_file).convert("RGB")
             uploaded_image = ImageOps.exif_transpose(uploaded_image)
             st.image(uploaded_image, use_container_width=True)
         else:
             st.warning(translations[lang]["warning_2"])
 
-    # Kolom Kanan: Hasil Analisis
+    # Right column: Analysis results
     with col2:
         st.write(translations[lang]["analyze_result"])
         
         if uploaded_file is not None:
-            # Deteksi wajah dan analisis personal color
             skin_image = upload_img(uploaded_image)
 
             if st.button("Start Analysis"):
