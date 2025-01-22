@@ -35,6 +35,7 @@ model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT)
 num_classes = 4  # Update with your number of classes
 model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, num_classes)
 MODEL_PATH = "./best_mobilenetv2_model.pth"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 state_dict = torch.load(MODEL_PATH, map_location=device)
 model.load_state_dict(state_dict)
 model = model.to(device)
@@ -47,8 +48,7 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-# Initialize device and models
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Initialize models
 face_detector = facer.face_detector('retinaface/mobilenet', device=device)
 face_parser = facer.face_parser('farl/lapa/448', device=device)
 
