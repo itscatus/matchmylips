@@ -22,7 +22,7 @@ image = Image.open(image_directory)
 PAGE_CONFIG = {"page_title": "Personal Color Analysis", 
                "page_icon": image, 
                "layout": "wide", 
-               "initial_sidebar_state": "auto"}
+               "initial_sidebar_state": "auto" }
 st.set_page_config(**PAGE_CONFIG)
 
 st.image('./assets/logo.png', use_column_width=True)
