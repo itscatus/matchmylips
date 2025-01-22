@@ -7,7 +7,7 @@ import streamlit as st
 from torchvision import transforms
 import pandas as pd
 from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
-import translations
+from translations import translations
 
 # Model and facer initialization
 device = "cuda" if torch.cuda.is_available() else "cpu"
