@@ -63,15 +63,12 @@ colors_csv_path = "./assets/colors.csv"
 colors_df = pd.read_csv(colors_csv_path)
 
 def extract_skin(image):
-    """
-    Ekstrak area kulit wajah dari gambar.
-    """
-    img_tensor = transform(image).unsqueeze(0).to(device)
+    img_tensor = transform(image).permute(2, 0, 1).unsqueeze(0).to(device)
     with torch.no_grad():
         parsing_result = face_parser(img_tensor)[0]  # Hasil parsing wajah
 
-    # Mask untuk area kulit (label tergantung model, misalnya label kulit = 1)
-    skin_mask = (parsing_result == 1)
+    # Mask untuk area kulit (label kulit biasanya 1 atau sesuai dengan output model)
+    skin_mask = (parsing_result == 1)  # Sesuaikan dengan label kulit di model Anda
 
     # Terapkan mask ke gambar asli
     skin_tensor = img_tensor.squeeze(0) * skin_mask.float()
@@ -81,23 +78,21 @@ def extract_skin(image):
 # Function to analysis the personal color
 def upload_img(uploaded_image):
     # Face detection and personal color analysis
-        img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
-        with torch.no_grad():
-            detections = face_detector(img_tensor)
+    img_tensor = transforms.ToTensor()(uploaded_image).unsqueeze(0).to(device)
+    with torch.no_grad():
+        detections = face_detector(img_tensor)
 
-        if len(detections) == 0:
-            st.error((translations[lang]["error_detect"]))
-        else:
-            st.success((translations[lang]["success_detect"]))
+    if len(detections) == 0:
+        st.error((translations[lang]["error_detect"]))
+    else:
+        st.success((translations[lang]["success_detect"]))
 
-        # Ekstraksi kulit wajah
-        face_skin = extract_skin(uploaded_image)
+    # Ekstraksi kulit wajah
+    face_skin = extract_skin(uploaded_image)
 
-        # Tampilkan hasil ekstraksi kulit
-        st.image(face_skin, caption="Extracted Skin Area", use_container_width=True)
-        return face_skin  # Kembalikan gambar kulit wajah
-            
-            
+    # Tampilkan hasil ekstraksi kulit
+    st.image(face_skin, caption="Extracted Skin Area", use_container_width=True)
+    return face_skin  # Kembalikan gambar kulit wajah            
 
 # Function to classify and display recommended colors
 def classify_spca(processed_skin_image):
