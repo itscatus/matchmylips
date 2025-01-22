@@ -25,7 +25,7 @@ PAGE_CONFIG = {"page_title": "Personal Color Analysis",
                "initial_sidebar_state": "auto"}
 st.set_page_config(**PAGE_CONFIG)
 
-st.logo('./assets/logo.png', size="large")
+st.image('./assets/logo.png', use_column_width=True)
 
 # Default language in session state
 if "language" not in st.session_state:
@@ -65,49 +65,59 @@ colors_df = pd.read_csv(colors_csv_path)
 # Function to evaluate and get parsing map
 def evaluate(image_path):
     try:
-        with torch.no_grad():
-            image = Image.open(image_path).convert("RGB")
-            image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
-            image_tensor = image_tensor.to(device)
-            
-            faces = face_detector(image_tensor)
-            if faces['rects'].nelement() == 0:
-                return None
+        # Load the image and convert to RGB
+        image = Image.open(image_path).convert("RGB")
+        image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).unsqueeze(0).to(torch.uint8)
+        image_tensor = image_tensor.to(device)
+        
+        # Deteksi wajah
+        faces = face_detector(image_tensor)
+        if faces['rects'].nelement() == 0:
+            print("No faces detected")
+            return None
 
-            faces_parsed = face_parser(image_tensor, faces)
-            seg_logits = faces_parsed['seg']['logits']
-            seg_probs = seg_logits.softmax(dim=1).cpu()
-            parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
-            
-            return parsing_map
+        if 'image_ids' in faces:
+            faces['image_ids'] = faces['image_ids'].long()
+
+        # Parsing wajah
+        faces_parsed = face_parser(image_tensor, faces)
+        seg_logits = faces_parsed['seg']['logits']
+        seg_probs = seg_logits.softmax(dim=1).cpu()
+        
+        # Generate parsing map (take max across class dimension)
+        parsing_map = seg_probs.argmax(1).squeeze(0).cpu().numpy()
+        return parsing_map
     except Exception as e:
         print(f"Error in evaluate: {e}")
         return None
 
 # Function to extract skin from image using parsing map
 def extract_skin(image_path, parsing_map):
-    if isinstance(image_path, Image.Image):
-        img_bytes = io.BytesIO()
-        image_path.save(img_bytes, format='PNG')  # Save to BytesIO buffer
-        img_bytes.seek(0)  # Rewind the buffer to the start
-        image = Image.open(img_bytes).convert("RGB")
-    else:
+    try:
+        # Load the image and convert to numpy array
         image = Image.open(image_path).convert("RGB")
-      
-    image = np.array(image)
-    h, w, _ = image.shape
+        image = np.array(image)
+        h, w, _ = image.shape
 
-    if parsing_map is None or parsing_map.size == 0:
-        raise ValueError("Error: parsing_map is empty or invalid!")
+        if parsing_map is None or parsing_map.size == 0:
+            raise ValueError("Error: parsing_map is empty or invalid!")
 
-    parsing_map_resized = cv2.resize(parsing_map, (w, h), interpolation=cv2.INTER_NEAREST)
+        # Resize the parsing map to match image dimensions
+        parsing_map_resized = cv2.resize(parsing_map, (w, h), interpolation=cv2.INTER_NEAREST)
 
-    skin_mask = (parsing_map_resized == 1).astype(np.uint8)  # Assuming skin is labeled as 1
+        # Create a mask for skin (value 1 for skin, 0 for others)
+        skin_mask = (parsing_map_resized == 1).astype(np.uint8)  # 1 is the index for skin in parsing_map
 
-    image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
-    image_rgba[:, :, 3] = skin_mask * 255  # Set transparency for non-skin areas
+        # Create an RGBA image to apply transparency
+        image_rgba = cv2.cvtColor(image, cv2.COLOR_RGB2RGBA)
 
-    return image_rgba
+        # Set the alpha channel based on skin_mask (opaque for skin, transparent for others)
+        image_rgba[:, :, 3] = skin_mask * 255  # 255 for opaque, 0 for transparent
+
+        return image_rgba
+    except Exception as e:
+        print(f"Error in extract_skin: {e}")
+        return None
 
 # Function to process skin extraction in the uploaded image
 def upload_img(uploaded_image):
