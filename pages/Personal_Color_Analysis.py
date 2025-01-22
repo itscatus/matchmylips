@@ -9,6 +9,27 @@ from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 import facer
 from translations import translations
 
+# Streamlit page setup
+PAGE_CONFIG = {
+    "page_title": "Personal Color Analysis",
+    "page_icon": "./assets/person-bounding-box.png",
+    "layout": "wide",
+    "initial_sidebar_state": "auto"
+}
+st.set_page_config(**PAGE_CONFIG)
+
+if "language" not in st.session_state:
+    st.session_state.language = "en"
+lang = st.session_state.language
+
+# Sidebar for language selection
+with st.sidebar:
+    st.header(translations[lang]["header_language"])
+    if st.button("EN"):
+        st.session_state.language = "en"
+    if st.button("ID"):
+        st.session_state.language = "id"
+
 # Initialize MobileNet model
 model = mobilenet_v2(weights=MobileNet_V2_Weights.DEFAULT)
 num_classes = 4  # Update with your number of classes
@@ -34,27 +55,6 @@ face_parser = facer.face_parser('farl/lapa/448', device=device)
 # Load colors CSV
 colors_csv_path = "./assets/colors.csv"
 colors_df = pd.read_csv(colors_csv_path)
-
-# Streamlit page setup
-PAGE_CONFIG = {
-    "page_title": "Personal Color Analysis",
-    "page_icon": "./assets/person-bounding-box.png",
-    "layout": "wide",
-    "initial_sidebar_state": "auto"
-}
-st.set_page_config(**PAGE_CONFIG)
-
-if "language" not in st.session_state:
-    st.session_state.language = "en"
-lang = st.session_state.language
-
-# Sidebar for language selection
-with st.sidebar:
-    st.header(translations[lang]["header_language"])
-    if st.button("EN"):
-        st.session_state.language = "en"
-    if st.button("ID"):
-        st.session_state.language = "id"
 
 # Parsing map function
 def evaluate(image_path):
