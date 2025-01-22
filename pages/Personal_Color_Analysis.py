@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from PIL import Image, ImageOps
+import io
 import cv2
 import facer
 import streamlit as st
@@ -85,7 +86,14 @@ def evaluate(image_path):
 
 # Function to extract skin from image using parsing map
 def extract_skin(image_path, parsing_map):
-    image = Image.open(image_path).convert("RGB")
+    if isinstance(image_path, Image.Image):
+        img_bytes = io.BytesIO()
+        image_path.save(img_bytes, format='PNG')  # Save to BytesIO buffer
+        img_bytes.seek(0)  # Rewind the buffer to the start
+        image = Image.open(img_bytes).convert("RGB")
+    else:
+        image = Image.open(image_path).convert("RGB")
+      
     image = np.array(image)
     h, w, _ = image.shape
 
