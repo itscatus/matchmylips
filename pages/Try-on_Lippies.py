@@ -129,6 +129,8 @@ def virtual_makeup():
                                 processed_image = apply_lip_color_with_alpha(image, parsing_map, lip_color, alpha)
                                 with col2:
                                     st.write(translations[lang]["try_result"])
+                                    st.info(translations[lang]["upload_info"])
+                                    st.warning(translations[lang]["upload_warn"])
                                     st.subheader(translations[lang]["modified"])
                                     st.image(processed_image, use_container_width=True)
                             except Exception as e:
@@ -140,10 +142,10 @@ def virtual_makeup():
         else:
             st.warning(translations[lang]["warning_2"])
 
-    with col2:
-        st.write(translations[lang]["try_result"])
+    with col2:        
         if not img_file_buffer:
+            st.write(translations[lang]["try_result"])
             st.info(translations[lang]["upload_info"])
-
+            st.warning(translations[lang]["upload_warn"])
 
 virtual_makeup()
