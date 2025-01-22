@@ -91,11 +91,11 @@ def upload_img(uploaded_image):
             st.success((translations[lang]["success_detect"]))
 
         # Ekstraksi kulit wajah
-        skin_image = extract_skin(uploaded_image)
+        face_skin = extract_skin(uploaded_image)
 
         # Tampilkan hasil ekstraksi kulit
-        st.image(skin_image, caption="Extracted Skin Area", use_container_width=True)
-        return skin_image  # Kembalikan gambar kulit wajah
+        st.image(face_skin, caption="Extracted Skin Area", use_container_width=True)
+        return face_skin  # Kembalikan gambar kulit wajah
             
             
 
