@@ -18,6 +18,8 @@ PAGE_CONFIG = {
 }
 st.set_page_config(**PAGE_CONFIG)
 
+st.logo('./assets/logo.png', size="large")
+
 if "language" not in st.session_state:
     st.session_state.language = "en"
 lang = st.session_state.language
@@ -119,7 +121,7 @@ def analysis_page():
 
         if uploaded_file is not None:
             # Directly use uploaded_image in the evaluation process
-            parsing_map = evaluate(uploaded_image)
+            parsing_map = evaluate(np.array(uploaded_image))
             if parsing_map is not None:
                 skin_image = extract_skin(uploaded_image, parsing_map)
                 # st.image(skin_image, caption="Extracted Skin", use_container_width=True)
