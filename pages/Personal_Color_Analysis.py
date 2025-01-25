@@ -124,6 +124,7 @@ def analysis_page():
             parsing_map = evaluate(np.array(uploaded_image))
             if parsing_map is not None:
                 skin_image = extract_skin(uploaded_image, parsing_map)
+                st.success(translations[lang]["success_detect"])
                 # st.image(skin_image, caption="Extracted Skin", use_container_width=True)
 
             if st.button("Start Analysis"):
