@@ -1,6 +1,6 @@
 # MatchMyLips
 
-**MatchMyLips** adalah sebuah aplikasi berbasis web yang dikembangkan menggunakan Streamlit dengan tujuan untuk membantu pengguna memilih rona pewarna bibir yang sesuai berdasarkan analisis Seasonal Personal Color menggunakan model Convolutional Neural Network (CNN). Aplikasi ini juga menyediakan fitur try-on untuk mencoba rona pewarna bibir secara real-time via foto.
+**MatchMyLips** adalah sebuah aplikasi berbasis web yang dikembangkan menggunakan Streamlit dengan tujuan untuk membantu pengguna memilih rona pewarna bibir yang sesuai berdasarkan analisis Seasonal Personal Color menggunakan model Convolutional Neural Network (CNN). Aplikasi ini juga menyediakan fitur try-on untuk mencoba rona pewarna bibir via citra wajah yang diunggah.
 
 ---
 
@@ -78,9 +78,9 @@ matchmylips/
 ├── utils/
 │   ├── functions.py      # Script untuk mengecek apakah wajah terdeteksi atau tidak
 │   └── translations.py   # Script dictionary terjemahan bahasa Indonesia dan bahasa Inggris
-├── requirements.txt     # Daftar dependensi Python
+├── requirements.txt   # Daftar dependensi Python
 ├── best_mobilenetv2_model.pth    # File model mobilenetv2 yang digunakan untuk prediksi personal color analysis dari citra kulit wajah  
-└── README.md            # Dokumentasi proyek
+└── README.md   # Dokumentasi proyek
 ```
 
 ---
