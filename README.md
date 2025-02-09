@@ -1,4 +1,4 @@
-<img src="assets/logo.png" width="100" />
+<img src="assets/logo_white.png" width="100" />
 
 # MatchMyLips
 
@@ -99,7 +99,7 @@ This application is released under the MIT license. Please refer to the LICENSE 
 
 ---
 
-<img src="assets/logo.png" width="100" />
+<img src="assets/logo_white.png" width="100" />
 
 # MatchMyLips
 
