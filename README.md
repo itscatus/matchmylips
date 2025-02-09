@@ -1,4 +1,4 @@
-<img src="assets/logo_white.png" width="100" />
+<h1><img src="assets/logo_white.png" width="100" />Match My Lips</h1>
 
 # MatchMyLips
 
