@@ -1,5 +1,4 @@
-!(assets/logo.png) 
-# MatchMyLips
+![](assets/logo.png) # MatchMyLips
 
 **MatchMyLips** adalah sebuah aplikasi berbasis web yang dikembangkan menggunakan Streamlit dengan tujuan untuk membantu pengguna memilih rona pewarna bibir yang sesuai berdasarkan analisis Seasonal Personal Color menggunakan model Convolutional Neural Network (CNN). Aplikasi ini juga menyediakan fitur try-on untuk mencoba rona pewarna bibir via citra wajah yang diunggah.
 
@@ -11,15 +10,21 @@
    - Aplikasi menganalisis citra menggunakan model CNN yang disiapkan untuk mendeteksi Seasonal Personal Color.
    - Aplikasi memberikan rekomendasi rona pewarna bibir yang sesuai dengan tipe Seasonal Personal Color yang dideteksi.
 
-3. **Deteksi Seasonal Personal Color dari Rona Pewarna Bibir**:
+![](img/spca_check.png)
+
+2. **Deteksi Seasonal Personal Color dari Rona Pewarna Bibir**:
    - Pengguna mengunggah foto citra rona pewarna bibir ke aplikasi.
    - Aplikasi menganalisis kategori Seasonal Personal Color dari rona warna yang di-klik.
    - Hasil yang diberikan berupa kode Hex dari warna beserta tipe Seasonal Personal Colornya.
 
-5. **Virtual Try-on**:
+![](img/shade-check.png)
+
+3. **Virtual Try-on**:
    - Pengguna mengunggah foto citra wajah ke aplikasi.
    - Pengguna memilih kode warna Hex yang ingin diterapkan pada bibir
    - Aplikasi akan memproses dan menerapkan kode warna Hex yang dipilih pada citra bibir menggunakan masking dengan teknik alpha blending.
+
+![](img/try-on.png)
 
 ---
 
