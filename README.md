@@ -1,6 +1,4 @@
-<h1><img src="assets/logo_white.png" width="100" />Match My Lips</h1>
-
-# MatchMyLips
+<h1><img src="assets/logo_white.png" width="100" />MatchMyLips</h1>
 
 
 **MatchMyLips** is a web-based application developed using Streamlit with the aim of helping users choose the right lip color shade based on Seasonal Personal Color analysis using the Convolutional Neural Network (CNN) model. This application also provides a try-on feature to try lip color shades via uploaded facial images.
@@ -99,9 +97,8 @@ This application is released under the MIT license. Please refer to the LICENSE 
 
 ---
 
-<img src="assets/logo_white.png" width="100" />
+<h1><img src="assets/logo_white.png" width="100" />MatchMyLips</h1>
 
-# MatchMyLips
 
 **MatchMyLips** adalah sebuah aplikasi berbasis web yang dikembangkan menggunakan Streamlit dengan tujuan untuk membantu pengguna memilih rona pewarna bibir yang sesuai berdasarkan analisis Seasonal Personal Color menggunakan model Convolutional Neural Network (CNN). Aplikasi ini juga menyediakan fitur try-on untuk mencoba rona pewarna bibir via citra wajah yang diunggah.
 
