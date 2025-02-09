@@ -2,9 +2,8 @@
 
 # MatchMyLips
 
-**MatchMyLips** is a web-based application developed using Streamlit with the aim of helping users choose the right lip color shade based on Seasonal Personal Color analysis using the Convolutional Neural Network (CNN) model. This application also provides a try-on feature to try lip color shades via uploaded facial images.
 
----
+**MatchMyLips** is a web-based application developed using Streamlit with the aim of helping users choose the right lip color shade based on Seasonal Personal Color analysis using the Convolutional Neural Network (CNN) model. This application also provides a try-on feature to try lip color shades via uploaded facial images.
 
 ## Key Features
 1. **Seasonal Personal Color Detection from User's Facial Image**:
@@ -28,18 +27,16 @@
 
 ![](img/try-on.png)
 
----
 
 ## Technologies Used
 - **Frontend**:
-- Framework: Streamlit
-- Library: OpenCV (for image processing)
+   - Framework: Streamlit
+   - Library: OpenCV (for image processing)
 
 - **Backend**:
-- Framework: PyTorch (for CNN model)
-- Python
+   - Framework: PyTorch (for CNN model)
+   - Python
 
----
 
 ## How to Install and Run the Application
 
@@ -63,7 +60,6 @@ streamlit run Home.py
 4. **Application Access**:
 - Open a browser and access: `http://localhost:8501`
 
----
 
 ## Project Structure
 ```
@@ -91,14 +87,12 @@ matchmylips/
 └── README.md   # Project documentation
 ```
 
----
 
 ## Developer
 - Name: Felicia Natania Lingga
 - University: Universitas Padjadjaran
 - Contact: felicia21001@mail.unpad.ac.id
 
----
 
 ## License
 This application is released under the MIT license. Please refer to the LICENSE file for more details.
@@ -111,7 +105,6 @@ This application is released under the MIT license. Please refer to the LICENSE 
 
 **MatchMyLips** adalah sebuah aplikasi berbasis web yang dikembangkan menggunakan Streamlit dengan tujuan untuk membantu pengguna memilih rona pewarna bibir yang sesuai berdasarkan analisis Seasonal Personal Color menggunakan model Convolutional Neural Network (CNN). Aplikasi ini juga menyediakan fitur try-on untuk mencoba rona pewarna bibir via citra wajah yang diunggah.
 
----
 
 ## Fitur Utama
 1. **Deteksi Seasonal Personal Color dari Citra Wajah Pengguna**:
@@ -135,7 +128,6 @@ This application is released under the MIT license. Please refer to the LICENSE 
 
 ![](img/try-on.png)
 
----
 
 ## Teknologi yang Digunakan
 - **Frontend**:
@@ -146,7 +138,6 @@ This application is released under the MIT license. Please refer to the LICENSE 
   - Framework: PyTorch (untuk model CNN)
   - Python
 
----
 
 ## Cara Instalasi dan Menjalankan Aplikasi
 
@@ -170,7 +161,6 @@ This application is released under the MIT license. Please refer to the LICENSE 
 4. **Akses Aplikasi**:
    - Buka browser dan akses: `http://localhost:8501`
 
----
 
 ## Struktur Proyek
 ```
@@ -198,14 +188,12 @@ matchmylips/
 └── README.md   # Dokumentasi proyek
 ```
 
----
 
 ## Pengembang
 - Nama: Felicia Natania Lingga
 - Universitas: Universitas Padjadjaran
 - Kontak: felicia21001@mail.unpad.ac.id
 
----
 
 ## Lisensi
 Aplikasi ini dirilis di bawah lisensi MIT. Silakan merujuk ke file LICENSE untuk detail lebih lanjut.
