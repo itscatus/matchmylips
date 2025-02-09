@@ -69,26 +69,26 @@ streamlit run Home.py
 ```
 matchmylips/
 ├── .streamlit/
-│ └── config.toml # Script to set the streamlit display
-├── Home.py # Main script to run the application and display the homepage
+│ └── config.toml   # Script to set the streamlit display
+├── Home.py   # Main script to run the application and display the homepage
 ├── assets/
-│ ├── colors.csv # Lip color hue dataset file
-│ ├── cosmetics.png # Image file for the Shade Check page icon
-│ ├── house-door.png # Image file for Home page icon
-│ ├── lips.png # Image file for Try-on Lippies page icon
-│ ├── logo.png # Image file for application logo
+│ ├── colors.csv              # Lip color hue dataset file
+│ ├── cosmetics.png           # Image file for the Shade Check page icon
+│ ├── house-door.png          # Image file for Home page icon
+│ ├── lips.png                # Image file for Try-on Lippies page icon
+│ ├── logo.png                # Image file for application logo
 │ └── person-bounding-box.png # Image file for Personal Color Analysis page icon
-├── facer/ # Library model for face detection and parsing
+├── facer/   # Library model for face detection and parsing
 ├── pages/
-│ ├── Personal_Color_Analysis.py # Script for personal color analysis page
-│ ├── Shade_Check.py # Script for lip color check page
-│ └── Try-on_Lippies.py # Script for color try-on page lips
+│ ├── Personal_Color_Analysis.py   # Script for personal color analysis page
+│ ├── Shade_Check.py               # Script for lip color check page
+│ └── Try-on_Lippies.py            # Script for color try-on page lips
 ├── utils/
-│ ├── functions.py # Script to check whether a face is detected or not
-│ └── translations.py # Indonesian and English translation dictionary script
-├── requirements.txt # List of Python dependencies
-├── best_mobilenetv2_model.pth # Mobilenetv2 model file used for personal color analysis prediction from facial skin images
-└── README.md # Project documentation
+│ ├── functions.py       # Script to check whether a face is detected or not
+│ └── translations.py    # Indonesian and English translation dictionary script
+├── requirements.txt   # List of Python dependencies
+├── best_mobilenetv2_model.pth   # Mobilenetv2 model file used for personal color analysis prediction from facial skin images
+└── README.md   # Project documentation
 ```
 
 ---
@@ -103,7 +103,6 @@ matchmylips/
 ## License
 This application is released under the MIT license. Please refer to the LICENSE file for more details.
 
----
 ---
 
 <img src="assets/logo.png" width="100" />
