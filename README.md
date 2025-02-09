@@ -5,23 +5,23 @@
 
 ## Key Features
 1. **Seasonal Personal Color Detection from User's Facial Image**:
-- Users upload a photo of their facial image to the application.
-- The application analyzes the image using a CNN model prepared to detect Seasonal Personal Color.
-- The application provides recommendations for lip color shades that match the type of Seasonal Personal Color detected.
+   - Users upload a photo of their facial image to the application.
+   - The application analyzes the image using a CNN model prepared to detect Seasonal Personal Color.
+   - The application provides recommendations for lip color shades that match the type of Seasonal Personal Color detected.
 
 ![](img/spca_check.png)
 
 2. **Seasonal Personal Color Detection from Lip Color Shades**:
-- Users upload a photo of their lip color shade image to the application.
-- The application analyzes the Seasonal Personal Color category of the clicked color hue.
-- The results are given in the form of a Hex code of the color along with its Seasonal Personal Color type.
+   - Users upload a photo of their lip color shade image to the application.
+   - The application analyzes the Seasonal Personal Color category of the clicked color hue.
+   - The results are given in the form of a Hex code of the color along with its Seasonal Personal Color type.
 
 ![](img/shade-check.png)
 
 3. **Virtual Try-on**:
-- The user uploads a photo of a facial image to the application.
-- The user selects the Hex color code to be applied to the lips
-- The application will process and apply the selected Hex color code to the lip image using masking with the alpha blending technique.
+   - The user uploads a photo of a facial image to the application.
+   - The user selects the Hex color code to be applied to the lips
+   - The application will process and apply the selected Hex color code to the lip image using masking with the alpha blending technique.
 
 ![](img/try-on.png)
 
@@ -39,24 +39,24 @@
 ## How to Install and Run the Application
 
 1. **Clone Repository**:
-```bash
-git clone https://github.com/itscatus/websheesh.git
-cd matchmylips
-```
+   ```bash
+   git clone https://github.com/itscatus/websheesh.git
+   cd matchmylips
+   ```
 
 2. **Installation Dependencies**:
-Make sure you have Python and pip installed. Then run:
-```bash
-pip install -r requirements.txt
-```
+   Make sure you have Python and pip installed. Then run:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 3. **Running the Application**:
-```bash
-streamlit run Home.py
-```
+   ```bash
+   streamlit run Home.py
+   ```
 
 4. **Application Access**:
-- Open a browser and access: `http://localhost:8501`
+   Open a browser and access: `http://localhost:8501`
 
 
 ## Project Structure
@@ -156,7 +156,7 @@ This application is released under the MIT license. Please refer to the LICENSE 
    ```
 
 4. **Akses Aplikasi**:
-   - Buka browser dan akses: `http://localhost:8501`
+   Buka browser dan akses: `http://localhost:8501`
 
 
 ## Struktur Proyek
